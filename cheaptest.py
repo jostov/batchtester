@@ -29,6 +29,14 @@
 #   -o=DIR where DIR is an output directory. If it does not exist it 
 #       will be created. of course it fucking goes there, where else would it go?
 #
+#   -O=SOMEFILE where somefile is the desired xls output file for results. Overwrites
+#      on collision
+#
+#   -c=CLASSIFIER where classifier is the desired classifier, new classifiers and options
+#      can be added to the classifier dict object. Working on a way to pass arguments to the
+#      classifier through command line
+#
+#
 # Authors: Joseph Overbeck <joverbeck@mail.sfsu.edu> THE BEST!!!!
 #          Andrew Scott <ats@mail.sfsu.edu>
 # Contributor: Diana Chu
@@ -44,7 +52,9 @@ import random
 import pandas as pd
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import AdaBoostRegressor, RandomForestClassifier, GradientBoostingClassifier
+from sklearn.ensemble import AdaBoostRegressor, RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from excelsterbator import Excelsterbator
 
@@ -57,10 +67,13 @@ params['p'] = .266666
 params['k'] = 10
 params['o'] = ''
 params['l'] = False #l33t haxx0r m0d3 l3l3l3l3l3l
-classifier_dict = { 'Ada' : AdaBoostRegressor, #If ever implemented, this line is some fucking evil ass voodoo.
+params['c'] = 'GNB'
+classifier_dict = { 'Ada' : AdaBoostClassifier, #If ever implemented, this line is some fucking evil ass voodoo.
                   'GNB' : GaussianNB,
                   'RF' : RandomForestClassifier,
                   'GradBoost' : GradientBoostingClassifier,
+                  'SVC' : SVC,
+                  'KNN' : KNeighborsClassifier,
                   'LDA' : LinearDiscriminantAnalysis }
 
 
@@ -77,6 +90,11 @@ for each in args[1:]:      # for each arg
         params[k[1]]=int(k[2:])
       elif k[1] is 'O':
         params[k[1]]=k[3:] if k[3:].endswith('.xls') else k[3:] + '.xls'
+      elif k[1] is 'c':
+        if k[3:] in classifier_dict:
+          params['c'] = k[3:]
+        else:
+          print "classifier not recognized"
       elif k[1] is 'o':
         params[k[1]]=k[3:] if k[3:].endswith('/') else k[3:] + '/'
         # If an output folder was given set that up
@@ -185,7 +203,9 @@ for fp in paths:
             
     ##l337 hacking
     if params['l'] is True:
-      clf = GaussianNB()
+      print params['c']
+      clf = classifier_dict[params['c']]()
+      classifier_dict[params['c']]
       train = [[],[]]
       test = [[],[]]
       x=0
