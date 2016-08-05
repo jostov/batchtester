@@ -10,7 +10,7 @@
 #
 # Example use:
 #
-#    python kcross.py somefile.txt .... nfiles.txt
+#    python kcross.py somefile.txt .... nfiles.txt [-plkoOc]
 #
 # Arguments are:
 #
@@ -18,7 +18,7 @@
 #       data to be used for param tuning. this can be a float. I swear
 #       to god though if you fucking put an int here, that's some serious fuckerydoo.
 #   
-#   -l  l for l337 haxcor mode. 
+#   -l  activates classifier mode
 #
 #   -kZ where z is an integer, this is the number of partitions to 
 #       be used. how the fuck is it even supposed to make a float sized
@@ -30,14 +30,16 @@
 #       will be created. of course it fucking goes there, where else would it go?
 #
 #   -O=SOMEFILE where somefile is the desired xls output file for results. Overwrites
-#      on collision
+#      on collision, defaults to /dev/null/
 #
 #   -c=CLASSIFIER where classifier is the desired classifier, new classifiers and options
 #      can be added to the classifier dict object. Working on a way to pass arguments to the
 #      classifier through command line
 #
 #
-# Authors: Joseph Overbeck <joverbeck@mail.sfsu.edu> THE BEST!!!!
+#
+#
+# Authors: Joseph Overbeck <joverbeck@mail.sfsu.edu> THE most mediocre!!!!
 #          Andrew Scott <ats@mail.sfsu.edu>
 # Contributor: Diana Chu
 # Computer Science Department, SFSU
@@ -45,7 +47,6 @@
 #
 # Distributed under terms of the MIT license.
 # 
-# HAKT LOLOLOLOL
 import os
 import sys
 import random
@@ -66,9 +67,10 @@ random.seed('BIDAL')
 params['p'] = .266666
 params['k'] = 10
 params['o'] = ''
-params['l'] = False #l33t haxx0r m0d3 l3l3l3l3l3l
+params['O'] = '/dev/null'
+params['l'] = False 
 params['c'] = 'GNB'
-classifier_dict = { 'Ada' : AdaBoostClassifier, #If ever implemented, this line is some fucking evil ass voodoo.
+classifier_dict = { 'Ada' : AdaBoostClassifier, 
                   'GNB' : GaussianNB,
                   'RF' : RandomForestClassifier,
                   'GradBoost' : GradientBoostingClassifier,
@@ -85,17 +87,32 @@ for each in args[1:]:      # for each arg
     # Parse command line options and record values
     try: 
       if k[1] is 'p':
+        if float(k[2:]) >= 1:
+          print "Bad partition-value"
+          quit()
         params[k[1]]=float(k[2:])
       elif k[1] is 'k':
+        if int(k[2:]) <= 1:
+          print "Bad k-fold value, this hurts me physically"
+          quit()
         params[k[1]]=int(k[2:])
       elif k[1] is 'O':
+        if k[2] is not '=':
+          print "Args are formatted wrong"
+          quit()
         params[k[1]]=k[3:] if k[3:].endswith('.xls') else k[3:] + '.xls'
       elif k[1] is 'c':
+        if k[2] is not '=':
+          print "Args are formatted wrong"
+          quit()
         if k[3:] in classifier_dict:
           params['c'] = k[3:]
         else:
           print "classifier not recognized"
       elif k[1] is 'o':
+        if k[2] is not '=':
+          print "Args are formatted wrong"
+          quit()
         params[k[1]]=k[3:] if k[3:].endswith('/') else k[3:] + '/'
         # If an output folder was given set that up
         try:
@@ -203,7 +220,6 @@ for fp in paths:
             
     ##l337 hacking
     if params['l'] is True:
-      print params['c']
       clf = classifier_dict[params['c']]()
       classifier_dict[params['c']]
       train = [[],[]]
@@ -217,7 +233,6 @@ for fp in paths:
         x += 1
 
     
-      print matrix_key
       train1 = np.array(train[0])
       train2 = np.array(train[1])
       clf.fit(train2 , train1)
@@ -235,7 +250,7 @@ for fp in paths:
           z += 1
           
       fold_matrices['K-fold ' +str(i)] = test_list
-      print float(q)/z
+      print 'Fold ' + str(i) + ' completed with ' + str(float(q)/z) + "% accuracy"
       cumulative_data += test_list
 
 
@@ -243,8 +258,5 @@ for fp in paths:
   fold_matrices['Cumulative'] = cumulative_data
   thing.calculate_all_matrices(fold_matrices)
   thing.output_data(os.path.split(fp)[1][:30])
-  #for each in fold_matrices:
-    #print each
-    #print fold_matrices[each]
   print "Successfully partitioned " + fp
 thing.fin()
