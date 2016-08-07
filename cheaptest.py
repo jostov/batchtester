@@ -53,6 +53,7 @@ import random
 import pandas as pd
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
+from dumdumherd import DumDumHerd
 from sklearn.ensemble import AdaBoostRegressor, RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
@@ -75,6 +76,7 @@ classifier_dict = { 'Ada' : AdaBoostClassifier,
                   'RF' : RandomForestClassifier,
                   'GradBoost' : GradientBoostingClassifier,
                   'SVC' : SVC,
+                  'dum' : DumDumHerd,
                   'KNN' : KNeighborsClassifier,
                   'LDA' : LinearDiscriminantAnalysis }
 
@@ -218,7 +220,7 @@ for fp in paths:
             f.write(each +"\t"+"\t".join(map(str, j))+ nu)
 
             
-    ##l337 hacking
+    #Classifier testing mode
     if params['l'] is True:
       clf = classifier_dict[params['c']]()
       classifier_dict[params['c']]
