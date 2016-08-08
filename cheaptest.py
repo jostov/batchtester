@@ -47,17 +47,33 @@
 #
 # Distributed under terms of the MIT license.
 # 
+import importlib
+
+
+#This dictionary contains the command flag and associated module path
+#of the currently available classifiers. Simply add an entry to this
+#dictionary to add a new classifier to this program
+classifier_dict = { 'Ada' : 'sklearn.ensemble.AdaBoostClassifier',
+                  'GNB' : 'sklearn.naive_bayes.GaussianNB',
+                  'RF' : 'sklearn.ensemble.RandomForestClassifier',
+                  'GradBoost' : 'sklearn.ensemble.GradientBoostingClassifier',
+                  'SVC' : 'sklearn.svm.SVC',
+                  'dum' : 'dumdumherd.DumDumHerd',
+                  'KNN' : 'sklearn.neighbors.KNeighborsClassifier',
+                  'LDA' : 'sklearn.discriminant_analysis.LinearDiscriminantAnalysis'}
+
+for each in classifier_dict:
+  try:
+    b = importlib.import_module(''.join([j + '.' for j in classifier_dict[each].split('.')[:-1]])[:-1])
+    classifier_dict[each] = getattr(b, classifier_dict[each].split('.')[-1])
+  except ImportError:
+    print each + " failed to import"
+
 import os
 import sys
 import random
 import pandas as pd
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
-from dumdumherd import DumDumHerd
-from sklearn.ensemble import AdaBoostRegressor, RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from excelsterbator import Excelsterbator
 
 params = {}
@@ -70,16 +86,7 @@ params['k'] = 10
 params['o'] = ''
 params['O'] = '/dev/null'
 params['l'] = False 
-params['c'] = 'GNB'
-classifier_dict = { 'Ada' : AdaBoostClassifier, 
-                  'GNB' : GaussianNB,
-                  'RF' : RandomForestClassifier,
-                  'GradBoost' : GradientBoostingClassifier,
-                  'SVC' : SVC,
-                  'dum' : DumDumHerd,
-                  'KNN' : KNeighborsClassifier,
-                  'LDA' : LinearDiscriminantAnalysis }
-
+params['c']  = 'GNB'
 
 # Parse out the arguments 
 for each in args[1:]:      # for each arg
