@@ -48,11 +48,22 @@
 # Distributed under terms of the MIT license.
 # 
 import importlib
+import os
+import sys
+import random
+import pandas as pd
+import numpy as np
+from batchtest import BatchTest
+from excelsterbator import Excelsterbator
 
 
 #This dictionary contains the command flag and associated module path
 #of the currently available classifiers. Simply add an entry to this
 #dictionary to add a new classifier to this program
+
+#In order for a classifier to work with this program, it simply needs
+#to have fit() and predict() methods with inputs similar to those implemented
+#in the following classes
 classifier_dict = { 'Ada' : 'sklearn.ensemble.AdaBoostClassifier',
                   'GNB' : 'sklearn.naive_bayes.GaussianNB',
                   'RF' : 'sklearn.ensemble.RandomForestClassifier',
@@ -62,6 +73,7 @@ classifier_dict = { 'Ada' : 'sklearn.ensemble.AdaBoostClassifier',
                   'KNN' : 'sklearn.neighbors.KNeighborsClassifier',
                   'LDA' : 'sklearn.discriminant_analysis.LinearDiscriminantAnalysis'}
 
+#Handles dynamic imports
 for each in classifier_dict:
   try:
     b = importlib.import_module(''.join([j + '.' for j in classifier_dict[each].split('.')[:-1]])[:-1])
@@ -69,16 +81,12 @@ for each in classifier_dict:
   except ImportError:
     print each + " failed to import"
 
-import os
-import sys
-import random
-import pandas as pd
-import numpy as np
-from excelsterbator import Excelsterbator
-
+#Dictionary where runtime options are stored
 params = {}
 args = []
 args = sys.argv
+
+#Seeding random number generator with classy seed
 random.seed('BIDAL')
 
 params['p'] = .266666
@@ -110,6 +118,13 @@ for each in args[1:]:      # for each arg
           print "Args are formatted wrong"
           quit()
         params[k[1]]=k[3:] if k[3:].endswith('.xls') else k[3:] + '.xls'
+
+      elif k[1] is 'n':
+        if k[2] is not '=':
+          print "Args are formatted wrong"
+          quit()
+        params[k[1]]=k[3:]
+
       elif k[1] is 'c':
         if k[2] is not '=':
           print "Args are formatted wrong"
@@ -131,11 +146,23 @@ for each in args[1:]:      # for each arg
 
       elif k[1] is 'l':
         params[k[1]]=True
+      #Not an argument and it was passed
       else:
         print k + " is not a valid argument"
+
+    #This is the result when someone gives the wrong kind of data to an argument
     except ValueError:
       print "something went horribly wrong. reexamine the documentation"
       quit()
+
+# Making the header, god, this is so ugly, why am I doing this like this?
+# This shows a clear lack of style, sense, or even decency as a human being
+# I hope nobody reads these comments.
+if params['n'] is not None:
+  lena_headley = { 'Name' : params['n'], #Name goes here
+           'Classifier' : params['c']}
+else:
+  lena_headley = { 'Classifier' : Params['c']}
 
 # Providing user some information
 print "Preserving " + str(params['p']*100) + \
@@ -143,9 +170,17 @@ print "Preserving " + str(params['p']*100) + \
 print "Partitioning data into " + str(params['k']) + " segments"
 paths = args[1:]
 
-thing = Excelsterbator(matrix_dictionary=None, output_path=params['O'])
+
+#Create and hold excelsterbator object
+excel_output = Excelsterbator(matrix_dictionary=None, output_path=params['O'], 
+    header=lena_headley)
+excel_output.set_classifier(params['c'])
+
+state = None
 # For each file 
 for fp in paths:
+  if state is not None:
+    random.setstate(state)
   if not params['l'] and not os.path.isfile(fp):
     print fp + ' was not found. Skipping this.'
     continue
@@ -195,9 +230,9 @@ for fp in paths:
 
   first_index = 0
   partition = {}
-  cumulative_data = np.zeros([len(data),len(data)])
-  fold_matrices = {}
   # Writing K-folded data set
+  state = random.getstate()
+  classifier = BatchTest(classifier_dict[params['c']], excelout=excel_output, output_location=params['O'])
   for i in range(params['k']):
     testing = {}
     training= {}
@@ -225,47 +260,10 @@ for fp in paths:
         for each in sorted(testing.keys()):
           for j in testing[each]:
             f.write(each +"\t"+"\t".join(map(str, j))+ nu)
+    else:
+      classifier.test(training, testing)
 
-            
-    #Classifier testing mode
-    if params['l'] is True:
-      clf = classifier_dict[params['c']]()
-      classifier_dict[params['c']]
-      train = [[],[]]
-      test = [[],[]]
-      x=0
-      matrix_key = {}
-      for each in sorted(training):
-        matrix_key[each] = x
-        [train[1].append([float(z) for z in j[:-1]]) for j in training[each]]
-        [train[0].append(j) for j in [each for k in range(len(training[each]))]]
-        x += 1
-
-    
-      train1 = np.array(train[0])
-      train2 = np.array(train[1])
-      clf.fit(train2 , train1)
-      test_list = np.zeros([len(matrix_key), len(matrix_key)])
-      z = 0
-      q = 0
-      for j in testing:
-        for each in testing[j]:
-          ach = np.array(each[:-1])
-          prediction = matrix_key[clf.predict(ach.reshape(1,-1))[0]]
-          actual = matrix_key[j]
-          test_list[actual, prediction] +=1 
-          if actual == prediction:
-            q +=1
-          z += 1
-          
-      fold_matrices['K-fold ' +str(i)] = test_list
-      print 'Fold ' + str(i) + ' completed with ' + str(float(q)/z) + "% accuracy"
-      cumulative_data += test_list
-
-
-  print cumulative_data
-  fold_matrices['Cumulative'] = cumulative_data
-  thing.calculate_all_matrices(fold_matrices)
-  thing.output_data(os.path.split(fp)[1][:30])
+  print os.path.split(fp)[1]
+  classifier.to_excel(os.path.split(fp)[1])
   print "Successfully partitioned " + fp
-thing.fin()
+excel_output.fin()
