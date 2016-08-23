@@ -170,7 +170,7 @@ class Excelsterbator(object):
                                  index=header.keys())
       header_data.to_excel(self.writer, sheet_name=sheet, startrow=indices[0], 
                  startcol=indices[1])
-      indices[0] += len(header.keys())
+      indices[0] += len(header.keys()) + 1
       # Puts sensitivity values for each column into a dictionary and makes 
       # labels
       sensitivities_index = [str(i) + ' sensitivity' for i in 
