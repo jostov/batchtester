@@ -18,11 +18,12 @@ class BatchTest(object):
     test = [[],[]]
     x=0
     matrix_key = {}
-    for each in sorted(training):
+    for each in sorted(training, key=int):
       matrix_key[each] = x
       [train[1].append([float(z) for z in j[:-1]]) for j in training[each]]
       [train[0].append(j) for j in [each for k in range(len(training[each]))]]
       x += 1
+    print matrix_key
     train1 = np.array(train[0])
     train2 = np.array(train[1])
     clf.fit(train2 , train1)

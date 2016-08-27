@@ -36,6 +36,12 @@
 #      can be added to the classifier dict object. Working on a way to pass arguments to the
 #      classifier through command line
 #
+#   -n=NAME where name is the name of the person to be put in the header
+#   
+#   -B activates batch mode, which is for running experiments on pre-split data
+#      this should not be attempted with -l on. If you are running this program
+#      with this command flag, file arguments should point to folders with pre-split
+#      data in them.
 #
 #
 #
@@ -94,7 +100,9 @@ params['k'] = 10
 params['o'] = ''
 params['O'] = '/dev/null'
 params['l'] = False 
+params['B'] = False 
 params['c']  = 'GNB'
+params['n']  = None
 
 # Parse out the arguments 
 for each in args[1:]:      # for each arg
@@ -146,6 +154,9 @@ for each in args[1:]:      # for each arg
 
       elif k[1] is 'l':
         params[k[1]]=True
+
+      elif k[1] is 'B':
+        params[k[1]]=True
       #Not an argument and it was passed
       else:
         print k + " is not a valid argument"
@@ -162,7 +173,7 @@ if params['n'] is not None:
   lena_headley = { 'Name' : params['n'], #Name goes here
            'Classifier' : params['c']}
 else:
-  lena_headley = { 'Classifier' : Params['c']}
+  lena_headley = { 'Classifier' : params['c']}
 
 # Providing user some information
 print "Preserving " + str(params['p']*100) + \
@@ -179,91 +190,130 @@ excel_output.set_classifier(params['c'])
 state = None
 # For each file 
 for fp in paths:
-  if state is not None:
-    random.setstate(state)
-  if not params['l'] and not os.path.isfile(fp):
-    print fp + ' was not found. Skipping this.'
-    continue
-  print "attempting to setup k-cross validation partitioned data from " + fp
-
-  if not params['l']:
-    # Creating output directory 
-    try:
-      os.mkdir(params['o'] + fp[:-4])
-    except OSError:
-      print "directory and presumably data already exist for - " + fp
-      print "skipping " + fp
+  if not params['B']:
+    basename = ''
+    if state is not None:
+      random.setstate(state)
+    if not params['l'] and not os.path.isfile(fp):
+      print fp + ' was not found. Skipping this.'
       continue
+    print "attempting to setup k-cross validation partitioned data from " + fp
 
-  # Parsing file
-  data = {}
-  for each in open(fp, "r").readlines():
-    key = str(each).split()[0]
-    if key not in data:
-      data[key] = []
-    if key in data:
-      a = [float(x) for x in each.split()[1:-1]]
-      a.append(each.split()[-1])
-      data[key].append(a)
+    if not params['l']:
+      # Creating output directory 
+      try:
+        basename = params['o'] + '/' + os.path.split(fp)[-1][:-4]
+        os.mkdir(basename)
+      except OSError:
+        print "directory and presumably data already exist for - " + fp
+        print "skipping " + fp
+        continue
 
-  # Separating out parameter tuning data
-  parameter_tuning = {}
-  new_data = {}
-  prev = {}
-  for each in data:
-    parameter_tuning[each] = []
-    new_data[each] = []
-    random.shuffle(data[each])
-    parameter_tuning[each]= data[each][:int(round(params['p'] * \
-      len(data[each]),0))]
-    new_data[each]= data[each][int(round(params['p'] * len(data[each]),0)):]
-    prev[each] = 0
+    # Parsing file
+    data = {}
+    for each in open(fp, "r").readlines():
+      key = str(each).split()[0]
+      if key not in data:
+        data[key] = []
+      if key in data:
+        a = [float(x) for x in each.split()[1:-1]]
+        a.append(each.split()[-1])
+        data[key].append(a)
 
-  # Write parameter tuning data
-  data = new_data
-  if params['l'] is False:
-    with open(params['o'] + fp[:-4]+ "/"+ fp[:-4] + \
-      "_parameter_tuning.txt", "a") as f:
-      for each in sorted(parameter_tuning.keys()):
-        for i in parameter_tuning[each]:
-          f.write(each +"\t"+"\t".join(map(str, i))+ "\n")
+    # Separating out parameter tuning data
+    parameter_tuning = {}
+    new_data = {}
+    prev = {}
+    for each in data:
+      parameter_tuning[each] = []
+      new_data[each] = []
+      random.shuffle(data[each])
+      parameter_tuning[each]= data[each][:int(round(params['p'] * \
+        len(data[each]),0))]
+      new_data[each]= data[each][int(round(params['p'] * len(data[each]),0)):]
+      prev[each] = 0
 
-  first_index = 0
-  partition = {}
-  # Writing K-folded data set
-  state = random.getstate()
-  classifier = BatchTest(classifier_dict[params['c']], excelout=excel_output, output_location=params['O'])
+    # Write parameter tuning data
+    data = new_data
+    if params['l'] is False:
+      ffp = os.path.basename(fp)
+      with open(basename+ "/"+ ffp[:-4] + \
+        "_parameter_tuning.txt", "a") as f:
+        for each in sorted(parameter_tuning.keys()):
+          for i in parameter_tuning[each]:
+            f.write(each +"\t"+"\t".join(map(str, i))+ "\n")
+
+    first_index = 0
+    partition = {}
+    # Writing K-folded data set
+    state = random.getstate()
+    classifier = BatchTest(classifier_dict[params['c']], excelout=excel_output, output_location=params['O'])
+
+  if params['B']:
+    classifier = BatchTest(classifier_dict[params['c']], excelout=excel_output, output_location=params['O'])
+    fp = fp if fp.endswith('/') else fp + '/'
+    params['k'] = int(max(os.listdir(fp))[-14])+1
   for i in range(params['k']):
     testing = {}
     training= {}
 
-    # Splitting Training and test data
-    for each in data:
-      partition[each] = (i+1) * len(data[each]) / params['k']
-      testing[each] = data[each][prev[each]:partition[each]]
-      training[each] = data[each][:prev[each]] + data[each][partition[each]:]
+    if not params['B']:
+      # Splitting Training and test data
+      for each in data:
+        partition[each] = (i+1) * len(data[each]) / params['k']
+        testing[each] = data[each][prev[each]:partition[each]]
+        training[each] = data[each][:prev[each]] + data[each][partition[each]:]
 
-    # Updating slice indices
-    for each in partition:
-      prev[each] = partition[each]
+      # Updating slice indices
+      for each in partition:
+        prev[each] = partition[each]
 
-    if params['l'] is False:
-      # Writing training data
-      with open(params['o'] + fp[:-4]+ "/"+ fp[:-4] + "kfold" + str(i) +"_training.txt", "a") as f:
-        nu = '\n'
-        for each in sorted(training.keys()):
-          for j in training[each]:
-            f.write(each +"\t"+"\t".join(map(str, j))+ nu)
-      # Writing testing data
-      with open(params['o'] + fp[:-4]+ "/"+ fp[:-4] + "kfold" + str(i) +"_testing.txt", "a") as f:
-        nu = '\n'
-        for each in sorted(testing.keys()):
-          for j in testing[each]:
-            f.write(each +"\t"+"\t".join(map(str, j))+ nu)
-    else:
+      if params['l'] is False:
+        # Writing training data
+        with open(basename+ "/"+ ffp[:-4] + \
+          "kfold" + str(i) + "_training.txt", "a") as f:
+          nu = '\n'
+          for each in sorted(training.keys()):
+            for j in training[each]:
+              f.write(each +"\t"+"\t".join(map(str, j))+ nu)
+        # Writing testing data
+        with open(basename+ "/"+ ffp[:-4] + \
+          "kfold" + str(i) + "_testing.txt", "a") as f:
+        #with open(params['o'] + fp[:-4]+ "/"+ fp[:-4] + "kfold" + str(i) +"_testing.txt", "a") as f:
+          nu = '\n'
+          for each in sorted(testing.keys()):
+            for j in testing[each]:
+              f.write(each +"\t"+"\t".join(map(str, j))+ nu)
+        print "successfully partitioned " + fp
+    if params['B']:
+      if fp.endswith('/'):
+        basename = os.path.split(fp[:-1])[1]
+      else:
+        basename = os.path.split(fp)[1]
+        fp += '/'
+
+      for each in open(fp + basename  + "kfold" + str(i) +"_training.txt", "r").readlines():
+        key = str(each).split()[0]
+        if key not in training:
+          training[key] = []
+        if key in training:
+          a = [float(x) for x in each.split()[1:-1]]
+          a.append(each.split()[-1])
+          training[key].append(a)
+
+      for each in open(fp + basename + "kfold" + str(i) +"_testing.txt", "r").readlines():
+        key = str(each).split()[0]
+        if key not in testing:
+          testing[key] = []
+        if key in testing:
+          a = [float(x) for x in each.split()[1:-1]]
+          a.append(each.split()[-1])
+          testing[key].append(a)
+
+
+    if params['B'] or params['l']:
       classifier.test(training, testing)
-
-  print os.path.split(fp)[1]
-  classifier.to_excel(os.path.split(fp)[1])
-  print "Successfully partitioned " + fp
+  if params['B'] or params['l']:
+    classifier.to_excel(os.path.split(fp)[1])
+    print "Successfully tested " + fp
 excel_output.fin()

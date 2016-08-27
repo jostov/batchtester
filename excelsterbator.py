@@ -147,8 +147,15 @@ class Excelsterbator(object):
     # Labels appropriately in the case of the cumulative matrix
     if 'Cumulative' in k:
       k.remove('Cumulative')
+      k = sorted(k)
       k.insert(0, 'Cumulative')
 
+    header = self.get_header()
+    header_data = pd.DataFrame([header[i] for i in header],
+                               index=header.keys())
+    header_data.to_excel(self.writer, sheet_name=sheet, startrow=indices[0], 
+               startcol=indices[1])
+    indices[0] += len(header.keys()) + 1
     # Performing the testing for each k-fold
     for each in k:
       # Creating labels for multi-class matrix
@@ -165,12 +172,6 @@ class Excelsterbator(object):
         predictivities[i] = curmat[i][i] /float(sum(curmat[i,:]))
         acc[0] += curmat[i][i]
         acc[1] += sum(curmat[i, :])
-      header = self.get_header()
-      header_data = pd.DataFrame([header[i] for i in header],
-                                 index=header.keys())
-      header_data.to_excel(self.writer, sheet_name=sheet, startrow=indices[0], 
-                 startcol=indices[1])
-      indices[0] += len(header.keys()) + 1
       # Puts sensitivity values for each column into a dictionary and makes 
       # labels
       sensitivities_index = [str(i) + ' sensitivity' for i in 
@@ -229,7 +230,7 @@ class Excelsterbator(object):
             sheet_name=sheet, startrow=indices[0], startcol=indices[1] )
         self.binary_matrices[each][j][0].to_excel(self.writer, 
             sheet_name=sheet,startrow=indices[0] +1 , startcol=indices[1] + 3)
-        indices[0] += 7
+        indices[0] += 10
 
     #formatting the sheet
     workbook = self.writer.book
