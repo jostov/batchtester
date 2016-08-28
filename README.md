@@ -41,29 +41,29 @@
   will produce this set of folders and files,
 
 
- Some/Path/
-    file1/
-       file1kfold0_training.txt
-       file1kfold0_testing.txt
-       file1kfold1_training.txt
-       file1kfold1_testing.txt
-       file1kfold2_training.txt
-       file1kfold2_testing.txt
-       file1kfold3_training.txt
-       file1kfold3_testing.txt
-       file1kfold4_training.txt
-       file1kfold4_testing.txt
-       file1kfold5_training.txt
-       file1kfold5_testing.txt
-       file1kfold6_training.txt
-       file1kfold6_testing.txt
-       file1kfold7_training.txt
-       file1kfold7_testing.txt
-       file1kfold8_training.txt
-       file1kfold8_testing.txt
-       file1kfold9_training.txt
-       file1kfold9_testing.txt
-       folew_parameter_tuning.txt
+ -Some/Path/
+    -file1/
+       -file1kfold0_training.txt
+       -file1kfold0_testing.txt
+       -file1kfold1_training.txt
+       -file1kfold1_testing.txt
+       -file1kfold2_training.txt
+       -file1kfold2_testing.txt
+       -file1kfold3_training.txt
+       -file1kfold3_testing.txt
+       -file1kfold4_training.txt
+       -file1kfold4_testing.txt
+       -file1kfold5_training.txt
+       -file1kfold5_testing.txt
+       -file1kfold6_training.txt
+       -file1kfold6_testing.txt
+       -file1kfold7_training.txt
+       -file1kfold7_testing.txt
+       -file1kfold8_training.txt
+       -file1kfold8_testing.txt
+       -file1kfold9_training.txt
+       -file1kfold9_testing.txt
+       -file1_parameter_tuning.txt
 
   
 # Testing a pre-split directory
