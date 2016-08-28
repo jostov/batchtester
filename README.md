@@ -38,9 +38,8 @@
 
   python cheaptest.py -o="Some/Path" file1
 
-  will produce this set of folders and files,
+  will produce this set of folders and files:
 
-'''
  -Some/Path/
     -file1/
        -file1kfold0_training.txt
@@ -64,7 +63,6 @@
        -file1kfold9_training.txt
        -file1kfold9_testing.txt
        -file1_parameter_tuning.txt
-'''
   
 # Testing a pre-split directory
   
