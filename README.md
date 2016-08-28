@@ -43,29 +43,29 @@
 
   produces the following output directories
 ```
- -Some/Path/
-    -file1/
-       -file1kfold0_training.txt
-       -file1kfold0_testing.txt
-       -file1kfold1_training.txt
-       -file1kfold1_testing.txt
-       -file1kfold2_training.txt
-       -file1kfold2_testing.txt
-       -file1kfold3_training.txt
-       -file1kfold3_testing.txt
-       -file1kfold4_training.txt
-       -file1kfold4_testing.txt
-       -file1kfold5_training.txt
-       -file1kfold5_testing.txt
-       -file1kfold6_training.txt
-       -file1kfold6_testing.txt
-       -file1kfold7_training.txt
-       -file1kfold7_testing.txt
-       -file1kfold8_training.txt
-       -file1kfold8_testing.txt
-       -file1kfold9_training.txt
-       -file1kfold9_testing.txt
-       -file1_parameter_tuning.txt
+ Some/Path/
+    file1/
+       file1kfold0_training.txt
+       file1kfold0_testing.txt
+       file1kfold1_training.txt
+       file1kfold1_testing.txt
+       file1kfold2_training.txt
+       file1kfold2_testing.txt
+       file1kfold3_training.txt
+       file1kfold3_testing.txt
+       file1kfold4_training.txt
+       file1kfold4_testing.txt
+       file1kfold5_training.txt
+       file1kfold5_testing.txt
+       file1kfold6_training.txt
+       file1kfold6_testing.txt
+       file1kfold7_training.txt
+       file1kfold7_testing.txt
+       file1kfold8_training.txt
+       file1kfold8_testing.txt
+       file1kfold9_training.txt
+       file1kfold9_testing.txt
+       file1_parameter_tuning.txt
 ```
   
 # Testing a pre-split directory
@@ -74,8 +74,21 @@
   simply run the following command,
 
  ```
-  python cheaptest.py Some/Path/file1/ -B -o="Some_output.xls"
+  python cheaptest.py Some/Path/file1/ -B -o="Some_output.xls" -c=GNB
  ```
+  The -c=CLASSIFIER argument specifies which classifier is to be used for the batch of tests, where
+  classifier is the key to that particular classifier's entry in the class_dictionary dictionary
+  More classifiers can be easily introduced to the script, by simply ensuring the following things 
+  are true about the classifier:
+
+   1. The classifier has the fit and predict methods.
+   2. The fit method accepts two arguments, a list of class labels, and a list of training vectors
+
+  The -o argument is required as this program is built to run piles of tests at once, rather than one file
+  at a time. So, for now, by default, it outputs to /dev/null.
+  
+  Hmmm. As I write this, that seems like a terrible goddamn idea. Yeah, include that -o option every time.
+  Don't mess around with that.
   
   
   
@@ -84,10 +97,6 @@
   
   
 
-# Example use:
- 
-     python cheaptest.py somefile.txt .... nfiles.txt [-plkoOc]
- 
 #  Arguments are:
  
     -pX where x is a decimal between 0 and 1, this is the portion of 
