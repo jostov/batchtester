@@ -19,8 +19,10 @@
 # Splitting a file.
 
   In order to split a file, the syntax is as follows
-  
+
+```  
   python cheaptest.py -o="Path/To/Output/File" file1 [file2 ... fileN]
+```  
  
   By default this will split up the data into the following portions.
   Firstly, it will remove 26% of the samples and preserve them as parameter
@@ -67,6 +69,18 @@
 ```
   
 # Testing a pre-split directory
+
+  In order to run a set of tests against the previously described  directory of split files, 
+  simply run the following command,
+
+ ```
+  python cheaptest.py Some/Path/file1/ -B -o="Some_output.xls"
+ ```
+  
+  
+  
+
+  
   
   
 
@@ -108,10 +122,8 @@
  
  
   Authors: Joseph Overbeck <joverbeck@mail.sfsu.edu> THE most mediocre!!!!
-           Andrew Scott <ats@mail.sfsu.edu>
-  Contributor: Diana Chu
-  Computer Science Department, SFSU
-  Copyright (C) 2016 SFSU
+  Contributors: Diana Chu, Andrew Scott
+  Copyright (C) 2016 Joseph Overbeck
  
-  Distributed under terms of the MIT license.
+  Distributed under terms of the MIT license, right now at least.
   
