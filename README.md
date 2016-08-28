@@ -39,7 +39,7 @@
   python cheaptest.py -o="Some/Path" file1
 
 
-## Output directories
+## Output directories:
  -Some/Path/
     -file1/
        -file1kfold0_training.txt
