@@ -38,8 +38,8 @@
 
   python cheaptest.py -o="Some/Path" file1
 
-  will produce this set of folders and files:
 
+## Output directories
  -Some/Path/
     -file1/
        -file1kfold0_training.txt
