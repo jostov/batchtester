@@ -35,11 +35,11 @@
   than 0 and less than the number of samples remaining after partition.
 
   Using this command,
-
+```
   python cheaptest.py -o="Some/Path" file1
+```
 
-
-## Output directories:
+  produces the following output directories
 ```
  -Some/Path/
     -file1/
