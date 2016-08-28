@@ -40,6 +40,7 @@
 
 
 ## Output directories:
+```
  -Some/Path/
     -file1/
        -file1kfold0_training.txt
@@ -63,6 +64,7 @@
        -file1kfold9_training.txt
        -file1kfold9_testing.txt
        -file1_parameter_tuning.txt
+```
   
 # Testing a pre-split directory
   
