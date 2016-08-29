@@ -117,6 +117,7 @@ Note: You may use as many files as you like in a run. The arguments are unordere
 
 # All currently available command flags
  
+```
   -pX where X is a decimal between 0 and 1, this is the portion of 
       data to be used for param tuning. This should either be a float or 0, 
       everything else is expected to break this.
@@ -141,6 +142,7 @@ Note: You may use as many files as you like in a run. The arguments are unordere
      this should not be attempted with -l on. If you are running this program
      with this command flag, file arguments should point to folders with pre-split
      data in them.
+```
 
  
  
