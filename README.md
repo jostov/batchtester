@@ -16,7 +16,7 @@ experimental consistency. Using the second mode in any serious
 experimental capacity seems grotesquely wrong and wildly innappropriate
 for anything official.
 
-# Splitting a file.
+## Splitting a file.
 
 In order to split a file, the syntax is as follows
 
@@ -68,7 +68,7 @@ produces the following output directories
        file1_parameter_tuning.txt
 ```
   
-# Testing a pre-split directory
+## Testing a pre-split directory
 
 In order to run a set of tests against the previously described  directory of split files, 
 simply run the following command,
@@ -96,7 +96,7 @@ at a time. By default, the file name is /dev/null.
 Hmmm. As I write this, that seems like a terrible goddamn idea. Yeah, include that -o option every time.
 Don't mess around with that.
   
-# Quick Testing
+## Quick Testing
 
 As this was initially built just to do some quick testing with files without dealing with the parsing junk,
 this script has the ability to test and directly output results without ever creating the batch of testing files.
@@ -115,7 +115,7 @@ python cheaptest.py -l -o="outputfile" file1 file2
 
 Note: You may use as many files as you like in a run. The arguments are unordered.
 
-# All currently available command flags
+## All currently available command flags
  
 ```
   -pX where X is a decimal between 0 and 1, this is the portion of 
