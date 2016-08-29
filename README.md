@@ -85,6 +85,9 @@
    
    * The fit method accepts two arguments, a list of class labels, and a list of training vectors
 
+
+
+
   The -o argument is required as this program is built to run piles of tests at once, rather than one file
   at a time. So, for now, by default, it outputs to /dev/null.
   
