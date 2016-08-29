@@ -81,21 +81,25 @@ classifier is the key to that particular classifier's entry in the class_diction
 More classifiers can be easily introduced to the script, by simply ensuring the following things 
 are true about the classifier
 
-   * The classifier has the fit and predict methods.
-   
-   * The fit method accepts two arguments, a list of class labels, and a list of training vectors
+  * The classifier class has the two following methods, fit(list_of_feature_vectors, list_of_class_labels)
+    and also predict(feature_vector).
+
+  * The classifier must have an entry in the dictionary, class_dictionary. To use the classifier, pass whatever
+    key it has with the -c=KEY arguments
 
 
 
 
 The -o argument is required as this program is built to run piles of tests at once, rather than one file
-at a time. So, for now, by default, it outputs to /dev/null.
+at a time. By default, the file name is /dev/null.
   
 Hmmm. As I write this, that seems like a terrible goddamn idea. Yeah, include that -o option every time.
 Don't mess around with that.
   
+# Quick Testing
+
   
-#  Arguments are:
+# All currently available command flags
  
   -pX where x is a decimal between 0 and 1, this is the portion of 
       data to be used for param tuning. this can be a float. I swear
