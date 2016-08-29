@@ -88,19 +88,13 @@
 
 
 
-  The -o argument is required as this program is built to run piles of tests at once, rather than one file
-  at a time. So, for now, by default, it outputs to /dev/null.
+The -o argument is required as this program is built to run piles of tests at once, rather than one file
+at a time. So, for now, by default, it outputs to /dev/null.
   
-  Hmmm. As I write this, that seems like a terrible goddamn idea. Yeah, include that -o option every time.
-  Don't mess around with that.
-  
-  
-  
-
+Hmmm. As I write this, that seems like a terrible goddamn idea. Yeah, include that -o option every time.
+Don't mess around with that.
   
   
-  
-
 #  Arguments are:
  
     -pX where x is a decimal between 0 and 1, this is the portion of 
