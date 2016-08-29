@@ -129,8 +129,11 @@ Don't mess around with that.
  
  
 Authors: Joseph Overbeck <joverbeck@mail.sfsu.edu> THE most mediocre!!!!
+
 Contributors: Diana Chu, Andrew Scott
+
 Copyright (C) 2016 Joseph Overbeck
+
 
 Distributed under terms of the MIT license, right now at least.
   
