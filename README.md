@@ -79,7 +79,7 @@
   The -c=CLASSIFIER argument specifies which classifier is to be used for the batch of tests, where
   classifier is the key to that particular classifier's entry in the class_dictionary dictionary
   More classifiers can be easily introduced to the script, by simply ensuring the following things 
-  are true about the classifier:
+  are true about the classifier
 
    * The classifier has the fit and predict methods.
    
