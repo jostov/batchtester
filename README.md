@@ -90,7 +90,7 @@ are true about the classifier
 
 
 
-The -o argument is required as this program is built to run piles of tests at once, rather than one file
+The -o argument is required as this program is built to run piles of files at once, rather than one file
 at a time. By default, the file name is /dev/null.
   
 Hmmm. As I write this, that seems like a terrible goddamn idea. Yeah, include that -o option every time.
@@ -98,23 +98,35 @@ Don't mess around with that.
   
 # Quick Testing
 
-  
+As this was initially built just to do some quick testing with files without dealing with the parsing junk,
+this script has the ability to test and directly output results without ever creating the batch of testing files.
+Theoretically, the random number generator uses the same seed, and it does preserve its state between splitting the
+files and testing the classifier, so it should still produce the same splits every time, however, order in which files
+are passed as arguments, and runtime environment will affect the PNRG, so for effective comparison between classifiers
+it is highly recommended that the user split the files, and then run the script on the split files, so that the data
+set is the same for all tests. That being said, it does have this ability to quickly gauge the effectiveness of a classifier.
+
+In order to use this unrecommended feature, use the following syntax
+
+
+```
+python cheaptest.py -l -o="outputfile" file1 file2
+``` 
+
+Note: You may use as many files as you like in a run. The arguments are unordered.
+
 # All currently available command flags
  
-  -pX where x is a decimal between 0 and 1, this is the portion of 
-      data to be used for param tuning. this can be a float. I swear
-      to god though if you fucking put an int here, that's some serious fuckerydoo.
+  -pX where X is a decimal between 0 and 1, this is the portion of 
+      data to be used for param tuning. This should either be a float or 0, 
+      everything else is expected to break this.
     
-  -l  activates classifier mode
+  -l  activates the one off classifier testing mode.
 
-  -kZ where z is an integer, this is the number of partitions to 
-      be used. how the fuck is it even supposed to make a float sized
-      partition anyways, well i guess it could just be a fraction of
-      the main thing or whatever. I guess it could work, except it won't
-      so frig the fuck off.
-
+  -kZ where Z is an integer, this is the number of partitions to create. Floats here will break everything.
+      
   -o=DIR where DIR is an output directory. If it does not exist it 
-      will be created. of course it fucking goes there, where else would it go?
+      will be created. 
 
   -O=SOMEFILE where somefile is the desired xls output file for results. Overwrites
      on collision, defaults to /dev/null/
@@ -132,7 +144,7 @@ Don't mess around with that.
 
  
  
-Authors: Joseph Overbeck <joverbeck@mail.sfsu.edu> THE most mediocre!!!!
+Authors: Joseph Overbeck <joverbeck@mail.sfsu.edu>
 
 Contributors: Diana Chu, Andrew Scott
 
