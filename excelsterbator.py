@@ -103,7 +103,7 @@ class Excelsterbator(object):
 
     # Putting things in the appropriate place, and creating the appropriate
     # row and column labels
-    bina = pd.DataFrame(np.transpose(binary), index=cols, columns=rows)
+    bina = pd.DataFrame(binary, index=cols, columns=rows)
     row = ['Accuracy', 
                 'Pos Accuracy',
                 'Neg Accuracy',
@@ -174,7 +174,7 @@ class Excelsterbator(object):
         acc[1] += sum(curmat[i, :])
       # Puts sensitivity values for each column into a dictionary and makes 
       # labels
-      sensitivities_index = [str(i) + ' sensitivity' for i in 
+      sensitivities_index = [str(i) + ' predictivity' for i in 
                              sorted(sensitivities)] + ['Accuracy']
       sensitivitys = [sensitivities[i] for i in sorted(sensitivities)] + \
           [acc[0]/float(acc[1])]
@@ -187,7 +187,7 @@ class Excelsterbator(object):
 
       # Puts predictivity values for each row into a dictionary and makes labels
       p_column1 = pd.DataFrame(data=[predictivities[i] for i in 
-           sorted(predictivities)], index=[str(i) + ' predictivity' 
+           sorted(predictivities)], index=[str(i) + ' sensitivity' 
            for i in sorted(predictivities)])
       p_column1.to_excel(self.writer, sheet_name=sheet, startrow=indices[0]+1, 
                  startcol=indices[1]+2)
@@ -205,15 +205,14 @@ class Excelsterbator(object):
           startrow=indices[0], startcol=indices[1]+4)
 
       # Predictivities columns
-      p_column2 = pd.DataFrame([' ' for i in sorted(predictivities)], 
-          index=[predictivities[i] 
-          for i in sorted(predictivities)], columns=[''])
+      p_column2 = pd.DataFrame([' ' for i in sorted(sensitivitys)], 
+          index=sensitivitys, columns=[''])
       p_column2.to_excel(self.writer, sheet_name=sheet, startrow=indices[0], 
           startcol=indices[1]+5+self.dims)
       indices[0] += self.dims + 1 
 
       try:
-        s_row = pd.DataFrame(['' for i in sensitivitys], index=sensitivitys, 
+        s_row = pd.DataFrame(['' for i in predictivities], index=[predictivities[i] for i in sorted(predictivities)], 
             columns=['']).transpose()
         s_row.to_excel(self.writer, sheet_name=sheet, startrow=indices[0], 
             startcol=indices[1]+4)
