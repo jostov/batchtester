@@ -88,7 +88,7 @@ for each in args[1:]:      # for each arg
           quit()
         params[k[1]]=k[3:]
 
-      elif k[1] is 'c':
+      elif k[1:2] is 'c':
         if k[2] is not '=':
           print "Args are formatted wrong"
           quit()
@@ -125,10 +125,10 @@ for each in args[1:]:      # for each arg
 # This shows a clear lack of style, sense, or even decency as a human being
 # I hope nobody reads these comments.
 if params['n'] is not None:
-  lena_headley = { 'Name' : params['n'], #Name goes here
+  header_variable = { 'Name' : params['n'], #Name goes here
            'Classifier' : params['c']}
 else:
-  lena_headley = { 'Classifier' : params['c']}
+  header_variable = { 'Classifier' : params['c']}
 
 # Providing user some information
 print "Preserving " + str(params['p']*100) + \
@@ -139,7 +139,7 @@ paths = args[1:]
 
 #Create and hold excelsterbator object
 excel_output = Excelsterbator(matrix_dictionary=None, output_path=params['O'], 
-    header=lena_headley)
+    header=header_variable)
 excel_output.set_classifier(params['c'])
 
 state = None
